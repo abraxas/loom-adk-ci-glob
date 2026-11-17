@@ -1,0 +1,28 @@
+name: loom-190-adk-ci-glob
+
+services:
+  matcher:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:18750:18750"
+    environment:
+      PYTHONUNBUFFERED: "1"
+      PYTHONPATH: /opt/adk_agent
+      ADK_ROOT: /opt/adk_agent
+      STRANDS_ROOT: /opt/strands_agent
+      LAB_BIND: "0.0.0.0"
+      LAB_PORT: "18750"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:18750/health', timeout=3).status==200 else 1)",
+        ]
+      interval: 2s
+      timeout: 5s
+      retries: 20
+      start_period: 2s
